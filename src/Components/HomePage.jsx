@@ -4,24 +4,37 @@ import { BiCommentDetail } from 'react-icons/bi';
 import { BsEmojiSmile, BsFilter, BsMicFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { TbCircleDashed } from 'react-icons/tb';
 import ChatCard from './ChatCard/ChatCard';
+import Profile from './Profile/Profile';
 import MessageCard from './MessageCard/MessageCard';
 import { ImAttachment } from 'react-icons/im';
 import './HomePage.css';
+import { useNavigate } from 'react-router-dom';
+
 
 const HomePage = () => {
 
     const [queries, setQueries] = useState(null);
     const [currentChat, setCurrentChat] = useState(false);
     const [content, setContent] = useState('');
+    const [isProfile, setIsProfile] = useState(false);
+    const navigate = useNavigate();
 
     const handleSearch = () => { };
 
     const handleChatClick = () => {
-        setCurrentChat(true)
+        setCurrentChat(true);
     }
 
     const handleCreateNewMessage = () => {
 
+    }
+
+    const handleNavigate = () => {
+        setIsProfile(true);
+    }
+
+    const handleCloseOpenProfile = () => {
+        setIsProfile(false);
     }
 
     return (
@@ -29,9 +42,15 @@ const HomePage = () => {
             <div className='py-14 bg-[#00a884] w-full'></div>
             <div className='flex bg-[#f0f2f5] h-[90vh] absolute left-[2vw] top-[5vh] w-[96vw]'>
                 <div className='left w-[30%] bg-[#e8e9ec] h-full'>
-                    <div className='w-full'>
+                    
+                    {/* profile */}
+                    {isProfile && <div className='w-full h-full'><Profile handleCloseOpenProfile={handleCloseOpenProfile}/></div>}
+                    
+                    {!isProfile && <div className='w-full'>
+
+                        {/* home */}
                         <div className='flex justify-between items-center p-3'>
-                            <div className='flex item-center space-x-3'>
+                            <div onClick={handleNavigate} className='flex item-center space-x-3'>
                                 <img className="rounded-full w-10 h-10 cursor-poimter" src="https://cdn.pixabay.com/photo/2024/02/16/20/28/lighthouse-8578318_1280.jpg" alt="dummy image" />
                                 <p>username</p>
                             </div>
@@ -66,7 +85,7 @@ const HomePage = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div>}
                 </div>
 
                 {/* default whats up page */}
