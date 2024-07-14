@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { BiCommentDetail } from 'react-icons/bi';
 import { BsEmojiSmile, BsFilter, BsMicFill, BsThreeDotsVertical } from 'react-icons/bs';
@@ -9,6 +9,10 @@ import MessageCard from './MessageCard/MessageCard';
 import { ImAttachment } from 'react-icons/im';
 import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
+import { Menu, MenuItem } from '@mui/material';
+import CreateGroup from './Group/CreateGroup';
+import { useDispatch, useSelector } from 'react-redux';
+import { currentUser, logoutAction } from '../Redux/Auth/Action';
 
 
 const HomePage = () => {
@@ -18,6 +22,21 @@ const HomePage = () => {
     const [content, setContent] = useState('');
     const [isProfile, setIsProfile] = useState(false);
     const navigate = useNavigate();
+    const [isGroup, setIsGroup] = useState(false);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const {auth} = useSelector(store=>store);
+    const dispatch = useDispatch();
+    const token = localStorage.getItem("token");
+
+    const open = Boolean(anchorEl);
+    
+    const handleClick = (e) => {
+        setAnchorEl(e.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const handleSearch = () => { };
 
@@ -37,26 +56,69 @@ const HomePage = () => {
         setIsProfile(false);
     }
 
+    const handleCreateGroup = () => {
+        setIsGroup(true);
+    }
+
+    useEffect(()=>{
+        dispatch(currentUser(token))
+    },[token])
+
+    const handleLogout = () => {
+        dispatch(logoutAction())
+        navigate("/signup")
+    }
+
+    useEffect(()=>{
+        if(!auth.reqUser){
+            navigate("/signup")
+        }
+    },[auth.reqUser])
+
     return (
         <div className='relative'>
             <div className='py-14 bg-[#00a884] w-full'></div>
             <div className='flex bg-[#f0f2f5] h-[90vh] absolute left-[2vw] top-[5vh] w-[96vw]'>
                 <div className='left w-[30%] bg-[#e8e9ec] h-full'>
-                    
+
                     {/* profile */}
-                    {isProfile && <div className='w-full h-full'><Profile handleCloseOpenProfile={handleCloseOpenProfile}/></div>}
-                    
-                    {!isProfile && <div className='w-full'>
+                    {isProfile && <div className='w-full h-full'><Profile handleCloseOpenProfile={handleCloseOpenProfile} /></div>}
+                    {/* Create Group */}
+                    {!isProfile && isGroup && <CreateGroup />}
+                    {!isProfile && !isGroup && <div className='w-full'>
 
                         {/* home */}
                         <div className='flex justify-between items-center p-3'>
                             <div onClick={handleNavigate} className='flex item-center space-x-3'>
                                 <img className="rounded-full w-10 h-10 cursor-poimter" src="https://cdn.pixabay.com/photo/2024/02/16/20/28/lighthouse-8578318_1280.jpg" alt="dummy image" />
-                                <p>username</p>
+                                <p>{auth.reqUser?.fullName}</p>
                             </div>
                             <div className='space-x-3 text-2xl flex'>
                                 <TbCircleDashed className='cursor-pointer' onClick={() => navigate("/status")} />
                                 <BiCommentDetail />
+                                <div>
+                                    <BsThreeDotsVertical id="basic-button"
+                                        aria-controls={open ? 'basic-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={open ? 'true' : undefined}
+                                        onClick={handleClick}
+                                    />
+
+                                    <Menu
+                                        id="basic-menu"
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'basic-button',
+                                        }}
+                                    >
+                                        <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                        <MenuItem onClick={handleCreateGroup}>Create Group</MenuItem>
+                                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                                    </Menu>
+                                </div>
+
                             </div>
                         </div>
 
@@ -126,10 +188,10 @@ const HomePage = () => {
                         {/* footer part */}
                         <div className='footer bg-[#f0f2f5] absolute bottom-0 w-full py-3 text-2xl'>
                             <div className='flex justify-between items-center px-5 relative'>
-                                
+
                                 <BsEmojiSmile className='cursor-pointer' />
                                 <ImAttachment />
-                                
+
                                 <input
                                     className='py-2 outline-none border-none bg-white pl-4 rounded-md w-[85%]'
                                     type='text'
