@@ -1,11 +1,56 @@
-import { Button, CircularProgress } from '@mui/material';
+import { Avatar, Button, CircularProgress } from '@mui/material';
 import React, { useState } from 'react';
 import { BsArrowLeft, BsCheck2 } from 'react-icons/bs';
+import { useDispatch } from 'react-redux';
+import { createGroupChat } from '../../Redux/Chat/Action';
 
-const NewGroup = () => {
+const NewGroup = ({ groupMember, setIsGroup }) => {
 
     const [isImageUploading, setIsImageUploading] = useState(false);
+    const [groupImage, setGroupImage] = useState(null);
     const [groupName, setGroupName] = useState();
+    const token = localStorage.getItem("token");
+    const dispatch = useDispatch();
+
+    const uploadToCloudinary = (pics) => {
+        setIsImageUploading(true);
+        const data = new FormData();
+        data.append("file", pics);
+        data.append("upload_preset", "whatsapp-clone");
+        data.append("cloud_name", "dc8zcnlj6");
+        fetch("https://api.cloudinary.com/v1_1/dc8zcnlj6/image/upload", {
+            method: "post",
+            body: data,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("imgUrl", data);
+                setGroupImage(data.url.toString());
+                setIsImageUploading(false);
+            });
+    }
+
+    const handleCreateGroup = () => {
+        let userIds = [];
+
+        for(let user of groupMember) {
+            userIds.push(user.id);
+        }
+
+        const group = {
+            userIds,
+            chatName: groupName,
+            chatImage: groupImage
+        };
+
+        const data = {
+            group,
+            token,
+        };
+
+        dispatch(createGroupChat(data));
+        setIsGroup(false);
+    }
 
     return (
         <div className='w-full h-full'>
@@ -16,7 +61,16 @@ const NewGroup = () => {
 
             <div className='flex flex-col justify-center items-center my-12'>
                 <label htmlFor='imgInput' className='relative'>
-                    <img src='https://cdn.pixabay.com/photo/2017/10/29/14/51/planning-2899922_1280.jpg' alt='' />
+                    {/* <img 
+                        className='h-33 w-33 rounded-full'
+                        src={groupImage || 'https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png'} 
+                        alt='' 
+                    /> */}
+                    <Avatar 
+                        sx={{width:"15rem", height:"15rem"}}
+                        alt='' 
+                        src={groupImage || 'https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png'} 
+                    />
                     {isImageUploading && (
                         <CircularProgress className='absolute top-[5rem] left-[6rem]' />
                     )}
@@ -25,7 +79,7 @@ const NewGroup = () => {
                     type='file'
                     id='imgInput'
                     className='hidden'
-                    onChange={() => { console.log("imageOnChange") }}
+                    onChange={(e) => uploadToCloudinary(e.target.files[0])}
                     value={""}
                 />
             </div>
@@ -39,7 +93,7 @@ const NewGroup = () => {
             </div>
 
             {groupName && <div className='py-10 bg-slate-200 flex items-center justify-center'>
-                <Button>
+                <Button onClick={handleCreateGroup}>
                     <div className='bg-[#0c977d] rounded-full p-4'>
                         <BsCheck2 className='text-white font-bold text-3xl ' />
                     </div>

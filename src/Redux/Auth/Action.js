@@ -84,7 +84,7 @@ export const updateUser = (data) => async(dispatch) => {
             body: JSON.stringify(data.data)
         })
         const resData = await res.json();
-        console.log("register ", resData)
+        console.log("update user ", resData)
         dispatch({type:UPDATE_USER, payload:resData});
     } catch (error) {
         console.log("catch error", error)

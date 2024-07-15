@@ -3,20 +3,25 @@ import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 import SelectedMember from './SelectedMember';
 import ChatCard from '../ChatCard/ChatCard';
 import NewGroup from './NewGroup';
+import { searchUser } from '../../Redux/Auth/Action';
+import { useDispatch, useSelector } from 'react-redux';
 
-const CreateGroup = () => {
+const CreateGroup = ({ setIsGroup }) => {
 
     const [newGroup, setNewGroup] = useState(false);
     const [query, setQuery] = useState("");
     const [groupMember, setGroupMember] = useState(new Set());
-
+    const token = localStorage.getItem("token");
+    const {auth} = useSelector(store => store)
+    const dispatch = useDispatch()
+    
     const handleRemoveMember = (item) => {
         groupMember.delete(item);
         setGroupMember(groupMember);
     }
 
     const handleSearch = () => {
-        
+        dispatch(searchUser({ keyword:query, token }))
     }
 
     return (
@@ -52,14 +57,14 @@ const CreateGroup = () => {
                         />
                     </div>
                     <div className='bg-white overflow-y-scroll h-[50.2vh]'>
-                        {query && [1,1,1,1,1].map((item) => 
+                        {query && auth.searchUser?.map((item) => 
                             <div onClick={()=>{
                                 groupMember.add(item)
                                 setGroupMember(groupMember)
                                 setQuery("")
                             }}>
                             <hr />
-                            <ChatCard/>
+                            <ChatCard userImg={item.profilePicture} name={item.fullName} />
                         </div>) 
                         }
                     </div>
@@ -76,7 +81,7 @@ const CreateGroup = () => {
                     </div>
                 </div>
             }
-            {newGroup && <NewGroup/>}
+            {newGroup && <NewGroup setIsGroup={setIsGroup} groupMember={groupMember} />}
         </div>
     )
 }

@@ -107,7 +107,7 @@ const HomePage = () => {
                     {/* profile */}
                     {isProfile && <div className='w-full h-full'><Profile handleCloseOpenProfile={handleCloseOpenProfile} /></div>}
                     {/* Create Group */}
-                    {!isProfile && isGroup && <CreateGroup />}
+                    {!isProfile && isGroup && <CreateGroup setIsGroup={setIsGroup} />}
                     {!isProfile && !isGroup && <div className='w-full'>
 
                         {/* home */}
@@ -178,9 +178,9 @@ const HomePage = () => {
                             {chat.chats.length>0 && !queries && chat.chats?.map((item) => (
                                 <div onClick={() => handleCurrentChat(item)}>
                                     <hr />
-                                    {item.isGroup ? (
+                                    {item.group ? (
                                         <ChatCard 
-                                            name={item.isGroup} 
+                                            name={item.chatName} 
                                             userImg={item.chatImage || 
                                                 "https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png"
                                             } 
@@ -228,7 +228,7 @@ const HomePage = () => {
                                 <div className='py-3 space-x-4 flex items-center px-3'>
                                     <img 
                                         className='w-10 h-10 rounded-full' 
-                                        src={currentChat.isGroup ? (currentChat.chatImage || "https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png")
+                                        src={currentChat.group ? (currentChat.chatImage || "https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png")
                                                 : (auth.reqUser.id !== currentChat.users[0]?.id
                                                     ? currentChat.users[0].profilePicture || 
                                                       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
@@ -237,7 +237,7 @@ const HomePage = () => {
                                             } 
                                         alt='' 
                                     />
-                                    <p>{currentChat.isGroup ? currentChat.chatName : (auth.reqUser?.id==currentChat.users[0].id?currentChat.users[1].fullName:currentChat.users[0].fullName)}</p>
+                                    <p>{currentChat.group ? currentChat.chatName : (auth.reqUser?.id==currentChat.users[0].id?currentChat.users[1].fullName:currentChat.users[0].fullName)}</p>
                                 </div>
                                 <div className='py-3 flex space-x-4 items-center px-3'>
                                     <AiOutlineSearch />

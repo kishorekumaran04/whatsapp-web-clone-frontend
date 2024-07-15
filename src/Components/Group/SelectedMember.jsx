@@ -6,10 +6,10 @@ const SelectedMember = ({ handleRemoveMember, member }) => {
         <div className='flex items-center bg-slate-300 rounded-full'>
             <img
                 className='w-7 h-7 rounded-full'
-                src='https://cdn.pixabay.com/photo/2016/05/01/22/51/pripyat-1366161_1280.jpg'
+                src={member.profilePicture || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
                 alt=''
             />
-            <p className='px-2'>username</p>
+            <p className='px-2'>{member.fullName}</p>
             <AiOutlineClose onClick={handleRemoveMember} className='pr-1 cursor-pointer' />
         </div>
     )
