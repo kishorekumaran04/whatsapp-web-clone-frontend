@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { BsArrowLeft, BsCheck, BsPencil } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { updateUser } from '../../Redux/Auth/Action';
 
 const Profile = ({ handleCloseOpenProfile }) => {
 
     const [flag, setFlag] = useState(false);
     const navigate = useNavigate();
-    const [userName, setUserName] = useState();
+    const [userName, setUserName] = useState(null);
+    const [tempPicture, setTempPicture] = useState(null);
+    const {auth}  = useSelector(store=>store);
+    const dispatch = useDispatch();
 
     const handleFlag = () => {
         setFlag(true);
@@ -18,6 +23,32 @@ const Profile = ({ handleCloseOpenProfile }) => {
 
     const handleChange = (e) => {
         setUserName(e.target.value);
+        console.log(userName);
+    }
+
+    const uploadToCloudinary = (pics) => {
+
+        const data = new FormData();
+        data.append("file", pics);
+        data.append("upload_preset", "whatsapp-clone");
+        data.append("cloud_name", "dc8zcnlj6");
+        fetch("https://api.cloudinary.com/v1_1/dc8zcnlj6/image/upload", {
+            method: "post",
+            body: data,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("imgUrl", data);
+                setTempPicture(data.url.toString());
+
+                const dataa = {
+                    id: auth.reqUser.id,
+                    token: localStorage.getItem("token"),
+                    data: { profilePicture: data.url.toString() },
+                };
+                // userUpdate(id, )
+                dispatch(updateUser(dataa));
+            });
     }
 
     return (
@@ -35,11 +66,11 @@ const Profile = ({ handleCloseOpenProfile }) => {
                 <label htmlFor='imgInput'>
                     <img
                         className='rounded-full w-[15vw] h-[15vw] cursor-pointer'
-                        src='https://cdn.pixabay.com/photo/2024/03/04/16/38/cat-8612685_1280.jpg'
+                        src={auth.reqUser?.profilePicture || tempPicture || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
                         alt=''
                     />
                 </label>
-                <input type='file' id='imgInput' className='hidden' />
+                <input onChange={(e)=>uploadToCloudinary(e.target.files[0])} type='file' id='imgInput' className='hidden' />
             </div>
 
             {/* name section */}

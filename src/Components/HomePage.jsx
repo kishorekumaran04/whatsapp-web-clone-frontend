@@ -113,7 +113,7 @@ const HomePage = () => {
                         {/* home */}
                         <div className='flex justify-between items-center p-3'>
                             <div onClick={handleNavigate} className='flex item-center space-x-3'>
-                                <img className="rounded-full w-10 h-10 cursor-poimter" src="https://cdn.pixabay.com/photo/2024/02/16/20/28/lighthouse-8578318_1280.jpg" alt="dummy image" />
+                                <img className="rounded-full w-10 h-10 cursor-poimter" src={auth.reqUser?.profilePicture || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt='' />
                                 <p>{auth.reqUser?.fullName}</p>
                             </div>
                             <div className='space-x-3 text-2xl flex'>
@@ -197,7 +197,7 @@ const HomePage = () => {
                                                 auth.reqUser.id !== item.users[0]?.id
                                                     ? item.users[0].profilePicture || 
                                                       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                                                    : item.users[0].profilePicture ||
+                                                    : item.users[1].profilePicture ||
                                                       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                                             }
                                         />
